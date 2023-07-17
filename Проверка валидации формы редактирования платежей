@@ -1,0 +1,60 @@
+# finance-validation.spec.yaml
+
+name: Проверка валидации формы редактирования платежей
+version: 1.0.0
+description: |
+  Этот spec файл содержит тесты для проверки валидации формы при редактировании платежей на странице https://finance.dev.fabrique.studio/payments/edit/.
+tests:
+  - name: Проверка обязательных полей
+    steps:
+      - navigateTo: https://finance.dev.fabrique.studio/payments/edit/
+      - click: saveButton
+      - expect:
+          elements:
+            - id: paymentAmountError
+              text: "Поле обязательно для заполнения"
+            - id: paymentDateError
+              text: "Поле обязательно для заполнения"
+            - id: paymentMethodError
+              text: "Поле обязательно для заполнения"
+            - id: paymentDescriptionError
+              text: "Поле обязательно для заполнения"
+
+  - name: Проверка ограничений ввода данных
+    steps:
+      - navigateTo: https://finance.dev.fabrique.studio/payments/edit/
+      - setInputValue:
+          selector: paymentAmount
+          value: -100
+      - click: saveButton
+      - expect:
+          elements:
+            - id: paymentAmountError
+              text: "Значение должно быть больше 0"
+  
+      - setInputValue:
+          selector: paymentDate
+          value: "2025-13"
+      - click: saveButton
+      - expect:
+          elements:
+            - id: paymentDateError
+              text: "Неверный формат даты"
+
+      - setInputValue:
+          selector: paymentMethod
+          value: "invalidMethod"
+      - click: saveButton
+      - expect:
+          elements:
+            - id: paymentMethodError
+              text: "Недопустимый метод платежа"
+
+      - setInputValue:
+          selector: paymentDescription
+          value: "a".repeat(256)
+      - click: saveButton
+      - expect:
+          elements:
+            - id: paymentDescriptionError
+              text: "Превышено максимальное количество символов (255)"
