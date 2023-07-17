@@ -1,0 +1,57 @@
+# finance.spec.yaml
+
+name: Тестирование страницы редактирования платежей
+version: 1.0.0
+description: |
+  Этот spec файл содержит тесты для страницы редактирования платежей на https://finance.dev.fabrique.studio/payments/edit/.
+tests:
+  - name: Проверка заголовка страницы
+    steps:
+      - navigateTo: https://finance.dev.fabrique.studio/payments/edit/
+      - expect:
+          title: Редактирование платежа | Finance
+
+  - name: Проверка обязательных полей на форме
+    steps:
+      - navigateTo: https://finance.dev.fabrique.studio/payments/edit/
+      - expect:
+          elements:
+            - id: paymentAmount
+              required: true
+            - id: paymentDate
+              required: true
+            - id: paymentMethod
+              required: true
+            - id: paymentDescription
+              required: true
+
+  - name: Проверка ввода корректных данных
+    steps:
+      - navigateTo: https://finance.dev.fabrique.studio/payments/edit/
+      - setInputValue:
+          selector: paymentAmount
+          value: 1000
+      - setInputValue:
+          selector: paymentDate
+          value: 2023-07-17
+      - setInputValue:
+          selector: paymentMethod
+          value: Credit Card
+      - setInputValue:
+          selector: paymentDescription
+          value: Test Payment
+      - click: saveButton
+      - expect:
+          url: https://finance.dev.fabrique.studio/payments/
+
+  - name: Проверка обработки ошибок при некорректном вводе данных
+    steps:
+      - navigateTo: https://finance.dev.fabrique.studio/payments/edit/
+      - setInputValue:
+          selector: paymentAmount
+          value: -100
+      - click: saveButton
+      - expect:
+          elements:
+            - id: paymentAmountError
+              text: "Значение должно быть больше 0"
