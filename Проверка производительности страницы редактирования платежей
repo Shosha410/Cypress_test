@@ -1,0 +1,28 @@
+# finance-performance.spec.yaml
+
+name: Проверка производительности страницы редактирования платежей
+version: 1.0.0
+description: |
+  Этот spec файл содержит тесты для проверки производительности страницы редактирования платежей на https://finance.dev.fabrique.studio/payments/edit/.
+tests:
+  - name: Проверка времени загрузки страницы
+    steps:
+      - navigateTo: https://finance.dev.fabrique.studio/payments/edit/
+      - measurePerformance:
+          metric: loadEventEnd
+          alias: loadTime
+      - expect:
+          responseTime:
+            alias: loadTime
+            lessThan: 3000  # Например, ожидаем время загрузки менее 3 секунд
+
+  - name: Проверка задержек при вводе данных
+    steps:
+      - navigateTo: https://finance.dev.fabrique.studio/payments/edit/
+      - setInputValue:
+          selector: paymentAmount
+          value: 1000
+          delay: 2000  # Задержка ввода значения в поле paymentAmount на 2 секунды
+      - click: saveButton
+      - expect:
+          url: https://finance.dev.fabrique.studio/payments/
